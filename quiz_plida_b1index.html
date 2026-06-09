@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz PLIDA B1 – Italiano</title>
+<style>
+  :root { color-scheme: light; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f5f7fa;
+    color: #1a1a2e;
+    min-height: 100vh;
+  }
+
+  header {
+    background: linear-gradient(135deg, #009246 0%, #009246 33%, #fff 33%, #fff 66%, #ce2b37 66%);
+    padding: 0;
+    height: 8px;
+  }
+
+  .hero {
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 28px 24px 20px;
+    text-align: center;
+  }
+
+  .hero h1 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: #009246;
+    margin-bottom: 6px;
+  }
+
+  .hero p {
+    color: #555;
+    font-size: 0.97rem;
+  }
+
+  .badge {
+    display: inline-block;
+    background: #ce2b37;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 12px;
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 24px 16px 60px;
+  }
+
+  .progress-bar-wrap {
+    background: #e8e8e8;
+    border-radius: 8px;
+    height: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: linear-gradient(90deg, #009246, #00c853);
+    border-radius: 8px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .progress-label {
+    font-size: 0.82rem;
+    color: #777;
+    text-align: right;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ce2b37;
+    margin: 28px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #ce2b37;
+  }
+
+  .question-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    border-left: 4px solid #009246;
+    transition: border-color 0.3s;
+  }
+
+  .question-card.answered-correct {
+    border-left-color: #00c853;
+    background: #f0fff5;
+  }
+
+  .question-card.answered-wrong {
+    border-left-color: #ce2b37;
+    background: #fff5f5;
+  }
+
+  .question-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #009246;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .question-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin-bottom: 14px;
+    line-height: 1.5;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .option-btn {
+    background: #f8f9fb;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.93rem;
+    color: #1a1a2e;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.18s;
+    font-family: inherit;
+  }
+
+  .option-btn:hover:not(:disabled) {
+    border-color: #009246;
+    background: #f0fff5;
+  }
+
+  .option-btn.correct {
+    border-color: #00c853;
+    background: #e6f9ee;
+    color: #006d2c;
+    font-weight: 600;
+  }
+
+  .option-btn.wrong {
+    border-color: #ce2b37;
+    background: #ffe6e8;
+    color: #8b0000;
+  }
+
+  .option-btn:disabled {
+    cursor: default;
+  }
+
+  .feedback {
+    margin-top: 10px;
+    font-size: 0.87rem;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: none;
+    line-height: 1.4;
+  }
+
+  .feedback.show { display: block; }
+  .feedback.correct { background: #e6f9ee; color: #006d2c; }
+  .feedback.wrong { background: #ffe6e8; color: #8b0000; }
+
+  .submit-wrap {
+    text-align: center;
+    margin-top: 32px;
+  }
+
+  .btn-submit {
+    background: #009246;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px 40px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-family: inherit;
+  }
+
+  .btn-submit:hover { background: #007a39; }
+
+  .btn-reset {
+    background: #fff;
+    color: #ce2b37;
+    border: 2px solid #ce2b37;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-left: 12px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .btn-reset:hover { background: #ce2b37; color: #fff; }
+
+  .result-panel {
+    display: none;
+    background: #fff;
+    border-radius: 14px;
+    padding: 32px 28px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    margin-top: 28px;
+  }
+
+  .result-panel.show { display: block; }
+
+  .score-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #009246, #00c853);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+  }
+
+  .result-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .result-subtitle {
+    color: #555;
+    font-size: 0.97rem;
+    margin-bottom: 20px;
+  }
+
+  .result-level {
+    display: inline-block;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  .level-ottimo { background: #e6f9ee; color: #006d2c; }
+  .level-bene { background: #fff8e1; color: #e65100; }
+  .level-ripassa { background: #ffe6e8; color: #8b0000; }
+
+  @media (max-width: 500px) {
+    .hero h1 { font-size: 1.3rem; }
+    .question-card { padding: 16px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<header></header>
+
+<div class="hero">
+  <h1>🇮🇹 Quiz PLIDA B1 – Italiano</h1>
+  <p>Ripassa grammatica e vocabolario dai livelli A1 fino al B1</p>
+  <span class="badge">50 domande</span>
+</div>
+
+<div class="container">
+  <div class="progress-label" id="progressLabel">Domanda 0 di 50</div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+
+  <div id="quizContainer"></div>
+
+  <div class="submit-wrap">
+    <button class="btn-submit" onclick="showResults()">Vedi il risultato</button>
+    <button class="btn-reset" onclick="resetQuiz()">Ricomincia</button>
+  </div>
+
+  <div class="result-panel" id="resultPanel">
+    <div class="score-circle" id="scoreCircle">0</div>
+    <div class="result-title" id="resultTitle">Risultato</div>
+    <div class="result-subtitle" id="resultSubtitle"></div>
+    <div class="result-level" id="resultLevel"></div>
+    <br>
+    <button class="btn-reset" onclick="resetQuiz()">Rifai il quiz</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ── SEZIONE 1: ARTICOLI E NOMI (A1) ──
+  {
+    section: "Articoli e nomi (A1)",
+    q: "Scegli l'articolo corretto: ___ libro è sul tavolo.",
+    opts: ["Il", "La", "Lo", "Le"],
+    ans: 0,
+    exp: "«Libro» è maschile singolare → articolo determinativo: IL."
+  },
+  {
+    section: "Articoli e nomi (A1)",
+    q: "Scegli l'articolo corretto: ___ amica di Marco si chiama Sofia.",
+    opts: ["La", "L'", "Il", "Una"],
+    ans: 1,
+    exp: "Prima di vocale si usa l'elisione: L'amica."
+  },
+  {
+    section: "Articoli e nomi (A1)",
+    q: "Qual è il plurale di «lo studente»?",
+    opts: ["Gli studenti", "I studenti", "Le studente", "Gli studente"],
+    ans: 0,
+    exp: "Lo studente → maschile plurale con LO → GLI studenti."
+  },
+  {
+    section: "Articoli e nomi (A1)",
+    q: "Scegli l'articolo corretto: ___ zaino è pesante.",
+    opts: ["Il", "Lo", "La", "L'"],
+    ans: 1,
+    exp: "Prima di z/s+consonante si usa LO: lo zaino."
+  },
+  {
+    section: "Articoli e nomi (A1)",
+    q: "Completa: Ho ___ sorella e ___ fratello.",
+    opts: ["una / un", "un / una", "uno / una", "la / il"],
+    ans: 0,
+    exp: "Articolo indeterminativo: UNA sorella (f.) e UN fratello (m.)."
+  },
+
+  // ── SEZIONE 2: VERBI AL PRESENTE (A1–A2) ──
+  {
+    section: "Verbi al presente (A1–A2)",
+    q: "Coniuga il verbo ESSERE: Loro ___ studenti.",
+    opts: ["siamo", "sono", "siete", "è"],
+    ans: 1,
+    exp: "ESSERE, 3a persona plurale: loro SONO."
+  },
+  {
+    section: "Verbi al presente (A1–A2)",
+    q: "Coniuga il verbo AVERE: Tu ___ fame?",
+    opts: ["ha", "hai", "ho", "abbiamo"],
+    ans: 1,
+    exp: "AVERE, 2a persona singolare: tu HAI."
+  },
+  {
+    section: "Verbi al presente (A1–A2)",
+    q: "Coniuga PARLARE: Noi ___ italiano ogni giorno.",
+    opts: ["parlate", "parlano", "parliamo", "parli"],
+    ans: 2,
+    exp: "PARLARE, 1a persona plurale: noi PARLIAMO."
+  },
+  {
+    section: "Verbi al presente (A1–A2)",
+    q: "Coniuga FINIRE: Voi ___ alle cinque.",
+    opts: ["finiamo", "finite", "finiscono", "finisci"],
+    ans: 1,
+    exp: "FINIRE, 2a persona plurale: voi FINITE."
+  },
+  {
+    section: "Verbi al presente (A1–A2)",
+    q: "Coniuga ANDARE: Io ___ al mercato il sabato.",
+    opts: ["vai", "vado", "va", "andiamo"],
+    ans: 1,
+    exp: "ANDARE è irregolare: io VADO."
+  },
+
+  // ── SEZIONE 3: PASSATO PROSSIMO (A2) ──
+  {
+    section: "Passato prossimo (A2)",
+    q: "Scegli il passato prossimo corretto: Ieri (io) ___ al cinema.",
+    opts: ["sono andato/a", "ho andato", "ero andato/a", "andavo"],
+    ans: 0,
+    exp: "ANDARE si coniuga con ESSERE al passato prossimo: sono andato/a."
+  },
+  {
+    section: "Passato prossimo (A2)",
+    q: "Scegli il passato prossimo corretto: Marco ___ la pasta.",
+    opts: ["è mangiato", "ha mangiato", "mangiava", "mangiò"],
+    ans: 1,
+    exp: "MANGIARE è transitivo → ausiliare AVERE: ha mangiato."
+  },
+  {
+    section: "Passato prossimo (A2)",
+    q: "Scegli la forma corretta: Le ragazze ___ in ritardo.",
+    opts: ["sono arrivate", "hanno arrivato", "sono arrivati", "è arrivata"],
+    ans: 0,
+    exp: "ARRIVARE + ESSERE; soggetto femminile plurale → arrivATE."
+  },
+  {
+    section: "Passato prossimo (A2)",
+    q: "Qual è il participio passato di LEGGERE?",
+    opts: ["legguto", "letto", "leggito", "leggiuto"],
+    ans: 1,
+    exp: "LEGGERE ha participio irregolare: LETTO."
+  },
+  {
+    section: "Passato prossimo (A2)",
+    q: "Scegli la forma corretta: Stamattina (noi) ___ un caffè al bar.",
+    opts: ["siamo presi", "abbiamo preso", "siamo preso", "prendevamo"],
+    ans: 1,
+    exp: "PRENDERE è transitivo → abbiamo preso."
+  },
+
+  // ── SEZIONE 4: IMPERFETTO (A2–B1) ──
+  {
+    section: "Imperfetto (A2–B1)",
+    q: "Completa con l'imperfetto: Da bambino, Mario ___ molto.",
+    opts: ["ha giocato", "giocava", "gioca", "giocherà"],
+    ans: 1,
+    exp: "L'imperfetto descrive abitudini nel passato: GIOCAVA."
+  },
+  {
+    section: "Imperfetto (A2–B1)",
+    q: "Scegli la forma corretta dell'imperfetto: Mentre io ___ la TV, è arrivato Luca.",
+    opts: ["guardavo", "ho guardato", "guarderò", "guardi"],
+    ans: 0,
+    exp: "Azione in corso nel passato = imperfetto: GUARDAVO."
+  },
+  {
+    section: "Imperfetto (A2–B1)",
+    q: "Coniuga ESSERE all'imperfetto: Loro ___ molto stanchi.",
+    opts: ["erano", "sono stati", "eravate", "erano stati"],
+    ans: 0,
+    exp: "ESSERE all'imperfetto, 3a persona plurale: ERANO."
+  },
+  {
+    section: "Imperfetto (A2–B1)",
+    q: "Completa: Quando ___ piccola, abitavo a Roma. (io)",
+    opts: ["ero", "sono stata", "sarò", "fossi"],
+    ans: 0,
+    exp: "Descrizione di stato nel passato → imperfetto ERO."
+  },
+  {
+    section: "Imperfetto (A2–B1)",
+    q: "Scegli la risposta corretta: Ogni estate noi ___ al mare.",
+    opts: ["andavamo", "siamo andati", "andiamo", "andremo"],
+    ans: 0,
+    exp: "Azione abitudinaria nel passato: ANDAVAMO (imperfetto)."
+  },
+
+  // ── SEZIONE 5: FUTURO SEMPLICE (A2–B1) ──
+  {
+    section: "Futuro semplice (A2–B1)",
+    q: "Coniuga LAVORARE al futuro: Domani lui ___ fino alle 20.",
+    opts: ["lavora", "ha lavorato", "lavorerà", "lavorava"],
+    ans: 2,
+    exp: "Futuro di LAVORARE, 3a persona singolare: LAVORERÀ."
+  },
+  {
+    section: "Futuro semplice (A2–B1)",
+    q: "Coniuga ESSERE al futuro: L'anno prossimo io ___ in Italia.",
+    opts: ["sono", "sarò", "ero", "sia"],
+    ans: 1,
+    exp: "ESSERE al futuro, 1a persona singolare: SARÒ."
+  },
+  {
+    section: "Futuro semplice (A2–B1)",
+    q: "Coniuga AVERE al futuro: Loro ___ più tempo libero.",
+    opts: ["hanno", "avranno", "avevano", "abbiano"],
+    ans: 1,
+    exp: "AVERE al futuro, 3a persona plurale: AVRANNO."
+  },
+  {
+    section: "Futuro semplice (A2–B1)",
+    q: "Usa il futuro di probabilità: Non risponde… ___ occupato.",
+    opts: ["è", "era", "sarà", "sia"],
+    ans: 2,
+    exp: "Il futuro esprime anche probabilità: SARÀ occupato."
+  },
+  {
+    section: "Futuro semplice (A2–B1)",
+    q: "Completa: Appena ___ a casa, ti chiamo. (arrivare, io)",
+    opts: ["arrivo", "arriverò", "sono arrivato/a", "arrivassi"],
+    ans: 1,
+    exp: "Con «appena» che introduce un'azione futura si usa il futuro: ARRIVERÒ."
+  },
+
+  // ── SEZIONE 6: CONDIZIONALE (B1) ──
+  {
+    section: "Condizionale (B1)",
+    q: "Scegli il condizionale corretto: (Io) ___ un caffè, grazie.",
+    opts: ["voglio", "vorrei", "volevo", "vorrò"],
+    ans: 1,
+    exp: "Il condizionale presente di VOLERE è VORREI (forma di cortesia)."
+  },
+  {
+    section: "Condizionale (B1)",
+    q: "Completa: Se avessi tempo, ___ di più. (studiare, io)",
+    opts: ["studierei", "studiavo", "studierò", "studi"],
+    ans: 0,
+    exp: "Ipotetica impossibile: se + congiuntivo imperfetto + condizionale presente → STUDIEREI."
+  },
+  {
+    section: "Condizionale (B1)",
+    q: "Coniuga POTERE al condizionale (voi):",
+    opts: ["potreste", "potete", "potevate", "potrete"],
+    ans: 0,
+    exp: "POTERE al condizionale, 2a persona plurale: POTRESTE."
+  },
+  {
+    section: "Condizionale (B1)",
+    q: "Trasforma al condizionale: «Voglio partire» → «(Io) ___ partire».",
+    opts: ["vorrò", "vorrei", "volevo", "voglia"],
+    ans: 1,
+    exp: "Condizionale presente di VOLERE, 1a persona: VORREI."
+  },
+  {
+    section: "Condizionale (B1)",
+    q: "Scegli la forma corretta: Al tuo posto, (io) ___ di più.",
+    opts: ["mangio", "mangiavo", "mangerei", "mangiai"],
+    ans: 2,
+    exp: "Consiglio con condizionale presente: MANGEREI."
+  },
+
+  // ── SEZIONE 7: CONGIUNTIVO PRESENTE (B1) ──
+  {
+    section: "Congiuntivo presente (B1)",
+    q: "Scegli la forma corretta: Penso che lui ___ bravo.",
+    opts: ["è", "sia", "sarà", "era"],
+    ans: 1,
+    exp: "Dopo PENSARE CHE si usa il congiuntivo: SIA."
+  },
+  {
+    section: "Congiuntivo presente (B1)",
+    q: "Completa: Spero che voi ___ presto.",
+    opts: ["tornate", "tornerete", "torniate", "tornaste"],
+    ans: 2,
+    exp: "SPERARE CHE + congiuntivo presente: TORNIATE."
+  },
+  {
+    section: "Congiuntivo presente (B1)",
+    q: "Scegli la forma corretta: Voglio che tu mi ___ la verità.",
+    opts: ["dici", "dica", "dirai", "dicevi"],
+    ans: 1,
+    exp: "VOLERE CHE + congiuntivo: DICA (dire, 3a pers. sing. congiuntivo)."
+  },
+  {
+    section: "Congiuntivo presente (B1)",
+    q: "Quale espressione richiede il congiuntivo?",
+    opts: ["Penso che...", "So che...", "Vedo che...", "Dico che..."],
+    ans: 0,
+    exp: "«Penso che» esprime opinione soggettiva → congiuntivo. Le altre introducono certezza."
+  },
+  {
+    section: "Congiuntivo presente (B1)",
+    q: "Completa: È importante che tu ___ puntuale.",
+    opts: ["sei", "eri", "sia", "saresti"],
+    ans: 2,
+    exp: "Espressioni impersonali + CHE → congiuntivo: SIA."
+  },
+
+  // ── SEZIONE 8: PRONOMI (A2–B1) ──
+  {
+    section: "Pronomi diretti e indiretti (A2–B1)",
+    q: "Sostituisci: «Guardo la televisione.» → «___ guardo.»",
+    opts: ["Li", "Le", "La", "Lo"],
+    ans: 2,
+    exp: "«La televisione» è femminile singolare → pronome diretto: LA."
+  },
+  {
+    section: "Pronomi diretti e indiretti (A2–B1)",
+    q: "Scegli il pronome indiretto: Telefono a Maria ogni sera. → ___ telefono ogni sera.",
+    opts: ["La", "Le", "Gli", "La"],
+    ans: 1,
+    exp: "A Maria (femminile) → pronome indiretto: LE."
+  },
+  {
+    section: "Pronomi diretti e indiretti (A2–B1)",
+    q: "Scegli la forma corretta dei pronomi combinati: Mi dai il libro? → ___ dai?",
+    opts: ["Me lo", "Te lo", "Glielo", "Me la"],
+    ans: 0,
+    exp: "Mi (indiretto) + lo (diretto, maschile) → ME LO."
+  },
+  {
+    section: "Pronomi diretti e indiretti (A2–B1)",
+    q: "Scegli il pronome corretto: Ho parlato con i miei colleghi. → ___ ho parlato.",
+    opts: ["Ci", "Ne", "Gli", "Li"],
+    ans: 2,
+    exp: "CON i miei colleghi (plurale) → GLI (indiretto plurale informale) ho parlato."
+  },
+  {
+    section: "Pronomi diretti e indiretti (A2–B1)",
+    q: "Usa il pronome corretto: Vuoi del caffè? → Sì, ___ voglio un po'.",
+    opts: ["lo", "ne", "la", "gli"],
+    ans: 1,
+    exp: "NE sostituisce «del caffè» (partitivo/quantità): ne voglio un po'."
+  },
+
+  // ── SEZIONE 9: PREPOSIZIONI (A2–B1) ──
+  {
+    section: "Preposizioni (A2–B1)",
+    q: "Scegli la preposizione corretta: Vado ___ scuola ogni giorno.",
+    opts: ["in", "a", "da", "di"],
+    ans: 1,
+    exp: "Luoghi urbani/istituzionali senza articolo → preposizione A: vado A scuola."
+  },
+  {
+    section: "Preposizioni (A2–B1)",
+    q: "Completa: Questo libro è ___ mio fratello.",
+    opts: ["di", "da", "a", "per"],
+    ans: 0,
+    exp: "Possesso/provenienza → DI: è DI mio fratello."
+  },
+  {
+    section: "Preposizioni (A2–B1)",
+    q: "Scegli la preposizione corretta: Lavoro ___ otto ___ cinque.",
+    opts: ["di / a", "dalle / alle", "da / a", "per / fino"],
+    ans: 1,
+    exp: "Orari: DALLE otto ALLE cinque (articolo + preposizione)."
+  },
+  {
+    section: "Preposizioni (A2–B1)",
+    q: "Completa: Vengo ___ Italia.",
+    opts: ["dall'", "da", "di", "dell'", "a"],
+    ans: 0,
+    exp: "Provenienza da paese con articolo → DA + L' = DALL': vengo DALL'Italia."
+  },
+  {
+    section: "Preposizioni (A2–B1)",
+    q: "Scegli la preposizione corretta: Ho bisogno ___ aiuto.",
+    opts: ["di", "a", "da", "per"],
+    ans: 0,
+    exp: "«Avere bisogno DI» è una costruzione fissa."
+  },
+
+  // ── SEZIONE 10: VOCABOLARIO E COMPRENSIONE (B1) ──
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Qual è il sinonimo di «gentile»?",
+    opts: ["maleducato", "cortese", "pigro", "triste"],
+    ans: 1,
+    exp: "GENTILE = CORTESE (educato, premuroso)."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Scegli la parola che NON appartiene al campo semantico del viaggio:",
+    opts: ["valigia", "passaporto", "forno", "aeroporto"],
+    ans: 2,
+    exp: "FORNO è un elettrodomestico da cucina, non appartiene al lessico del viaggio."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Completa il proverbio: «Il mattino ha l'oro ___ .»",
+    opts:["in tasca", "in bocca", "al sole", "nel petto"],
+    ans: 1,
+    exp: "Il proverbio completo è «Il mattino ha l'oro IN BOCCA»."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Che cosa significa «fare bella figura»?",
+    opts: ["avere una bella forma fisica", "fare una buona impressione", "disegnare bene", "guadagnare soldi"],
+    ans: 1,
+    exp: "«Fare bella figura» = creare una buona impressione negli altri."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Scegli il contrario di «aumentare»:",
+    opts: ["crescere", "migliorare", "diminuire", "aggiungere"],
+    ans: 2,
+    exp: "Il contrario di AUMENTARE è DIMINUIRE (ridurre, calare)."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Qual è il significato di «in gamba»?",
+    opts: ["con le gambe rotte", "capace e bravo", "di fretta", "malato"],
+    ans: 1,
+    exp: "«In gamba» è un'espressione idiomatica che significa capace, bravo, sveglio."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Quale connettivo indica CONTRASTO?",
+    opts: ["inoltre", "quindi", "però", "infatti"],
+    ans: 2,
+    exp: "PERÒ (= ma, tuttavia) indica contrasto. Gli altri indicano aggiunta, conseguenza, conferma."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Scegli la frase con il comparativo corretto:",
+    opts: [
+      "Mario è più alto di Luca.",
+      "Mario è più alto che Luca.",
+      "Mario è più alto di quanto Luca.",
+      "Mario è maggiore alto di Luca."
+    ],
+    ans: 0,
+    exp: "Comparativo di maggioranza tra due nomi: PIÙ … DI: Mario è più alto DI Luca."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Scegli la risposta corretta: «Da quanto tempo studi italiano?»",
+    opts: [
+      "Studio italiano per tre anni.",
+      "Studio italiano da tre anni.",
+      "Studio italiano da tre anni fa.",
+      "Ho studiato italiano da tre anni."
+    ],
+    ans: 1,
+    exp: "Azione iniziata nel passato e ancora in corso → presente + DA: studio DA tre anni. «Fa» si usa con il passato prossimo (tre anni fa), non con il presente."
+  },
+  {
+    section: "Vocabolario e comprensione (B1)",
+    q: "Trasforma in discorso indiretto: Giulia ha detto: «Parto domani.» → Giulia ha detto che ___ il giorno dopo.",
+    opts: ["parte", "partiva", "partirà", "sia partita"],
+    ans: 1,
+    exp: "Nel discorso indiretto al passato, il presente indicativo → imperfetto: PARTIVA il giorno dopo."
+  }
+];
+
+let answered = new Array(questions.length).fill(false);
+let correct = new Array(questions.length).fill(false);
+
+function buildQuiz() {
+  const container = document.getElementById('quizContainer');
+  container.innerHTML = '';
+  let currentSection = '';
+
+  questions.forEach((q, idx) => {
+    if (q.section !== currentSection) {
+      currentSection = q.section;
+      const sec = document.createElement('div');
+      sec.className = 'section-title';
+      sec.textContent = q.section;
+      container.appendChild(sec);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = 'card-' + idx;
+
+    const num = document.createElement('div');
+    num.className = 'question-num';
+    num.textContent = `Domanda ${idx + 1}`;
+
+    const qText = document.createElement('div');
+    qText.className = 'question-text';
+    qText.textContent = q.q;
+
+    const opts = document.createElement('div');
+    opts.className = 'options';
+
+    q.opts.forEach((opt, oi) => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
+      btn.id = `btn-${idx}-${oi}`;
+      btn.onclick = () => selectAnswer(idx, oi);
+      opts.appendChild(btn);
+    });
+
+    const feedback = document.createElement('div');
+    feedback.className = 'feedback';
+    feedback.id = 'feedback-' + idx;
+
+    card.appendChild(num);
+    card.appendChild(qText);
+    card.appendChild(opts);
+    card.appendChild(feedback);
+    container.appendChild(card);
+  });
+
+  updateProgress();
+}
+
+function selectAnswer(qIdx, optIdx) {
+  if (answered[qIdx]) return;
+  answered[qIdx] = true;
+
+  const q = questions[qIdx];
+  const card = document.getElementById('card-' + qIdx);
+  const feedback = document.getElementById('feedback-' + qIdx);
+  const isCorrect = optIdx === q.ans;
+  correct[qIdx] = isCorrect;
+
+  // Disable all buttons
+  q.opts.forEach((_, oi) => {
+    const btn = document.getElementById(`btn-${qIdx}-${oi}`);
+    btn.disabled = true;
+    if (oi === q.ans) btn.classList.add('correct');
+    else if (oi === optIdx && !isCorrect) btn.classList.add('wrong');
+  });
+
+  card.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  feedback.className = `feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+  feedback.textContent = (isCorrect ? '✅ Corretto! ' : '❌ Sbagliato. ') + q.exp;
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const done = answered.filter(Boolean).length;
+  const pct = Math.round((done / questions.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = `Domanda ${done} di ${questions.length}`;
+}
+
+function showResults() {
+  const total = questions.length;
+  const score = correct.filter(Boolean).length;
+  const pct = Math.round((score / total) * 100);
+
+  const panel = document.getElementById('resultPanel');
+  panel.classList.add('show');
+  document.getElementById('scoreCircle').textContent = `${score}/${total}`;
+
+  let title, subtitle, levelClass, levelText;
+  if (pct >= 80) {
+    title = 'Ottimo lavoro! 🎉';
+    subtitle = `Hai risposto correttamente a ${score} domande su ${total} (${pct}%). Sei pronto per l'esame!`;
+    levelClass = 'level-ottimo';
+    levelText = '🏆 Livello: Eccellente';
+  } else if (pct >= 60) {
+    title = 'Bene, continua così! 💪';
+    subtitle = `Hai risposto correttamente a ${score} domande su ${total} (${pct}%). Ripassa gli argomenti sbagliati.`;
+    levelClass = 'level-bene';
+    levelText = '📚 Livello: Buono';
+  } else {
+    title = 'Continua a studiare! 📖';
+    subtitle = `Hai risposto correttamente a ${score} domande su ${total} (${pct}%). Serve più ripasso.`;
+    levelClass = 'level-ripassa';
+    levelText = '🔄 Livello: Da ripassare';
+  }
+
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultSubtitle').textContent = subtitle;
+  const lvl = document.getElementById('resultLevel');
+  lvl.className = `result-level ${levelClass}`;
+  lvl.textContent = levelText;
+
+  panel.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  answered = new Array(questions.length).fill(false);
+  correct = new Array(questions.length).fill(false);
+  document.getElementById('resultPanel').classList.remove('show');
+  buildQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+buildQuiz();
+</script>
+</body>
+</html>
