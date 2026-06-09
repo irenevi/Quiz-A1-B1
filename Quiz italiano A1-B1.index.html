@@ -1,0 +1,206 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.quiz-wrap { padding: 1.5rem 0; }
+.header { text-align: center; margin-bottom: 2rem; }
+.header h1 { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.header p { font-size: 14px; color: var(--color-text-secondary); margin-top: 6px; }
+.progress-bar-wrap { background: var(--color-background-secondary); border-radius: 99px; height: 6px; margin-bottom: 0.5rem; }
+.progress-bar { background: #1D9E75; height: 6px; border-radius: 99px; transition: width 0.4s; }
+.progress-info { display: flex; justify-content: space-between; font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.level-badge { display: inline-block; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px; }
+.badge-a1 { background: #E1F5EE; color: #0F6E56; }
+.badge-a2 { background: #E6F1FB; color: #185FA5; }
+.badge-b1 { background: #EEEDFE; color: #534AB7; }
+.question-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+.q-text { font-size: 16px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 1rem; line-height: 1.5; }
+.options { display: flex; flex-direction: column; gap: 8px; }
+.option-btn { background: var(--color-background-secondary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-md); padding: 10px 14px; text-align: left; font-size: 14px; color: var(--color-text-primary); cursor: pointer; transition: all 0.15s; }
+.option-btn:hover:not(:disabled) { background: var(--color-background-tertiary); border-color: var(--color-border-secondary); }
+.option-btn.correct { background: #E1F5EE; border-color: #1D9E75; color: #085041; }
+.option-btn.wrong { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+.option-btn.reveal { background: #E1F5EE; border-color: #1D9E75; color: #085041; opacity: 0.7; }
+.explanation { margin-top: 10px; font-size: 13px; color: var(--color-text-secondary); background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 8px 12px; border-left: 3px solid var(--color-border-secondary); }
+.nav-row { display: flex; gap: 12px; margin-top: 1.5rem; align-items: center; justify-content: space-between; }
+.btn { padding: 9px 20px; border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; font-family: var(--font-sans); font-weight: 500; }
+.btn-primary { background: #1D9E75; color: white; border: none; }
+.btn-primary:hover { background: #0F6E56; }
+.btn-secondary { background: transparent; border: 0.5px solid var(--color-border-secondary); color: var(--color-text-primary); }
+.btn-secondary:hover { background: var(--color-background-secondary); }
+.results-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 2rem; text-align: center; }
+.score-big { font-size: 48px; font-weight: 500; color: #1D9E75; }
+.score-label { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 1.5rem 0; }
+.stat-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px; }
+.stat-num { font-size: 22px; font-weight: 500; }
+.stat-lbl { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.green { color: #1D9E75; } .blue { color: #185FA5; } .red { color: #E24B4A; }
+.category-tag { font-size: 11px; color: var(--color-text-tertiary); margin-bottom: 4px; }
+</style>
+
+<div class="quiz-wrap">
+<h2 class="sr-only" style="display:none">Quiz italiano PLIDA B1 - 50 domande a scelta multipla</h2>
+<div class="header">
+  <h1>Quiz di ripasso italiano — PLIDA B1</h1>
+  <p>50 domande · Livelli A1, A2 e B1</p>
+</div>
+<div class="progress-bar-wrap"><div class="progress-bar" id="pbar" style="width:2%"></div></div>
+<div class="progress-info"><span id="pcount">Domanda 1 di 50</span><span id="pscore">Risposte corrette: 0</span></div>
+<div id="quiz-area"></div>
+<div class="nav-row" id="nav-row">
+  <button class="btn btn-secondary" id="btn-prev" onclick="prevQ()" disabled>← Precedente</button>
+  <button class="btn btn-primary" id="btn-next" onclick="nextQ()" disabled>Prossima →</button>
+</div>
+</div>
+
+<script>
+const questions = [
+  {level:"A1",cat:"Verbi",q:"Qual è la forma corretta del verbo 'essere' alla prima persona singolare?",opts:["io sono","io è","io sei","io siamo"],ans:0,exp:"'Essere': io sono, tu sei, lui/lei è, noi siamo, voi siete, loro sono."},
+  {level:"A1",cat:"Verbi",q:"Come si coniuga 'avere' alla terza persona plurale?",opts:["loro hanno","loro ha","loro avete","loro hai"],ans:0,exp:"'Avere': io ho, tu hai, lui/lei ha, noi abbiamo, voi avete, loro hanno."},
+  {level:"A1",cat:"Articoli",q:"Qual è l'articolo determinativo corretto per 'libro' (maschile singolare)?",opts:["il libro","lo libro","la libro","i libro"],ans:0,exp:"Si usa 'il' davanti a sostantivi maschili che iniziano per consonante normale."},
+  {level:"A1",cat:"Articoli",q:"Qual è l'articolo determinativo corretto per 'zaino'?",opts:["lo zaino","il zaino","la zaino","gli zaino"],ans:0,exp:"Si usa 'lo' davanti a parole maschili che iniziano per z, s+consonante, gn, ps, x, y."},
+  {level:"A1",cat:"Plurale",q:"Qual è il plurale di 'ragazza'?",opts:["ragazze","ragazzi","ragazzas","ragazzia"],ans:0,exp:"I sostantivi femminili in -a formano il plurale in -e: ragazza → ragazze."},
+  {level:"A1",cat:"Numeri",q:"Come si dice 'fifteen' in italiano?",opts:["quindici","quinici","quindice","quindicce"],ans:0,exp:"I numeri: 11=undici, 12=dodici, 13=tredici, 14=quattordici, 15=quindici."},
+  {level:"A1",cat:"Vocabolario",q:"Come si dice 'Good morning' in italiano?",opts:["Buongiorno","Buonanotte","Buonasera","Ciao"],ans:0,exp:"Buongiorno = Good morning / Good day. Buonasera = Good evening. Buonanotte = Good night."},
+  {level:"A1",cat:"Preposizioni",q:"Completa la frase: 'Abito ___ Roma.'",opts:["a","in","di","da"],ans:0,exp:"Con le città si usa la preposizione 'a': abito a Roma, vivo a Madrid, lavoro a Parigi."},
+  {level:"A1",cat:"Aggettivi",q:"Qual è la forma femminile singolare di 'alto'?",opts:["alta","alti","alte","alto"],ans:0,exp:"Gli aggettivi in -o cambiano: maschile singolare -o, femminile singolare -a, maschile plurale -i, femminile plurale -e."},
+  {level:"A1",cat:"Verbi",q:"Quale frase è corretta?",opts:["Mi chiamo Marco","Io chiamo Marco","Mi chiama Marco","Chiamo mi Marco"],ans:0,exp:"'Chiamarsi' è un verbo riflessivo: io mi chiamo, tu ti chiami, lui/lei si chiama..."},
+  {level:"A2",cat:"Passato prossimo",q:"Qual è il passato prossimo di 'mangiare' (io)?",opts:["ho mangiato","sono mangiato","ho mangiare","avevo mangiato"],ans:0,exp:"I verbi transitivi formano il passato prossimo con 'avere' + participio passato: ho mangiato, hai mangiato..."},
+  {level:"A2",cat:"Passato prossimo",q:"Qual è il passato prossimo di 'andare' (lei)?",opts:["è andata","ha andato","è andato","ha andata"],ans:0,exp:"I verbi di movimento usano 'essere': essere/stare/andare/venire/partire/arrivare + participio (accordato con il soggetto)."},
+  {level:"A2",cat:"Imperfetto",q:"Qual è l'imperfetto di 'fare' alla terza persona singolare?",opts:["faceva","facéva","facieva","faciva"],ans:0,exp:"'Fare' all'imperfetto: facevo, facevi, faceva, facevamo, facevate, facevano."},
+  {level:"A2",cat:"Pronomi",q:"Scegli il pronome diretto corretto: '___ vedo ogni giorno.' (lei)",opts:["La","Lo","Le","Li"],ans:0,exp:"Pronomi diretti: mi, ti, lo/la, ci, vi, li/le. 'Lei' → 'la': La vedo ogni giorno."},
+  {level:"A2",cat:"Pronomi",q:"Scegli il pronome indiretto corretto: '___ parlo spesso.' (a lui)",opts:["Gli","Le","Lo","Li"],ans:0,exp:"Pronomi indiretti: mi, ti, gli/le, ci, vi, gli (loro). A lui → gli: Gli parlo spesso."},
+  {level:"A2",cat:"Preposizioni articolate",q:"Qual è la preposizione articolata corretta? 'Il libro ___ studente'",opts:["dello","del","dallo","dai"],ans:0,exp:"Di + lo = dello. Si usa 'lo/dello' davanti a parole maschili che iniziano per s+cons., z, gn, ps, x, y."},
+  {level:"A2",cat:"Dovere/Potere/Volere",q:"Scegli la forma corretta: 'Non ___ uscire stasera.' (io)",opts:["posso","possa","puedo","posso"],ans:0,exp:"'Potere': io posso, tu puoi, lui/lei può, noi possiamo, voi potete, loro possono."},
+  {level:"A2",cat:"Comparativi",q:"Forma il comparativo: 'Marco è ___ alto ___ Luca.'",opts:["più / di","più / che","tanto / quanto","meno / di"],ans:0,exp:"Il comparativo di maggioranza tra due sostantivi usa 'più... di': Mario è più alto di Luigi."},
+  {level:"A2",cat:"Futuro",q:"Qual è il futuro semplice di 'parlare' (noi)?",opts:["parleremo","parleremo","parliremo","parlieremo"],ans:0,exp:"Futuro semplice dei verbi in -are: parlerò, parlerai, parlerà, parleremo, parlerete, parleranno."},
+  {level:"A2",cat:"Riflessivi",q:"Scegli la forma corretta: 'A che ora ___ di solito?' (tu / svegliarsi)",opts:["ti svegli","si svegli","ti sveglia","svegli ti"],ans:0,exp:"Verbi riflessivi: mi sveglio, ti svegli, si sveglia, ci svegliamo, vi svegliate, si svegliano."},
+  {level:"B1",cat:"Congiuntivo",q:"Completa: 'Penso che lui ___ stanco.' ",opts:["sia","è","era","sarà"],ans:0,exp:"Dopo verbi di opinione (pensare, credere, sperare...) si usa il congiuntivo presente: sia, abbia, faccia..."},
+  {level:"B1",cat:"Congiuntivo",q:"Completa: 'È necessario che voi ___ puntuali.'",opts:["siate","siete","siate stati","foste"],ans:0,exp:"Con espressioni impersonali (è necessario che, è importante che...) → congiuntivo presente."},
+  {level:"B1",cat:"Congiuntivo passato",q:"Completa: 'Spero che Marco ___ già partito.'",opts:["sia","è","abbia","fosse"],ans:0,exp:"Il congiuntivo passato si forma con il congiuntivo di essere/avere + participio: sia partito, abbia mangiato."},
+  {level:"B1",cat:"Condizionale",q:"Qual è il condizionale presente di 'volere' (io)?",opts:["vorrei","volerò","voglio","volevo"],ans:0,exp:"Condizionale di 'volere': vorrei, vorresti, vorrebbe, vorremmo, vorreste, vorrebbero."},
+  {level:"B1",cat:"Condizionale",q:"Completa: 'Se avessi soldi, ___ in Italia.'",opts:["andrei","andrò","andassi","vado"],ans:0,exp:"Periodo ipotetico dell'irrealtà: Se + congiuntivo imperfetto + condizionale presente."},
+  {level:"B1",cat:"Periodo ipotetico",q:"Scegli il periodo ipotetico corretto (possibilità reale):",opts:["Se studiassi, passeresti l'esame","Se studierai, passerai l'esame","Se avessi studiato, avresti passato","Se studi, passeresti"],ans:1,exp:"Ipotesi reale (presente/futuro): Se + indicativo presente/futuro, indicativo futuro/presente."},
+  {level:"B1",cat:"Trapassato prossimo",q:"Forma il trapassato prossimo: 'Quando arrivai, lei ___ già (partire).'",opts:["era già partita","è già partita","aveva già partita","sarà già partita"],ans:0,exp:"Il trapassato prossimo = imperfetto di essere/avere + participio. Indica un'azione passata prima di un'altra passata."},
+  {level:"B1",cat:"Passivo",q:"Trasforma in passivo: 'Il professore ha spiegato la lezione.'",opts:["La lezione è stata spiegata dal professore","La lezione ha spiegato il professore","La lezione fu spiegata dal professore","La lezione è spiegata dal professore"],ans:0,exp:"Passivo al passato prossimo: essere (coniugato) + participio passato. L'agente è introdotto da 'da'."},
+  {level:"B1",cat:"Pronomi relativi",q:"Scegli il pronome relativo corretto: 'La città ___ abito è molto bella.'",opts:["in cui","che","cui","dove"],ans:3,exp:"Si può usare 'dove' o 'in cui' per indicare un luogo: La città dove/in cui abito. 'Dove' è più comune nel parlato."},
+  {level:"B1",cat:"Pronomi relativi",q:"Scegli il pronome relativo corretto: 'La persona ___ mi hai parlato è mia cugina.'",opts:["di cui","che","cui","la quale"],ans:0,exp:"Dopo preposizioni si usa 'cui': parlare di → di cui; andare con → con cui; pensare a → a cui."},
+  {level:"B1",cat:"Gerundio",q:"Completa: '___ in palestra, ho incontrato un amico.' (andare)",opts:["Andando","Andato","Mentre andare","Andare"],ans:0,exp:"Il gerundio presente (andando, parlando, leggendo) indica un'azione simultanea o di modo."},
+  {level:"B1",cat:"Infinito",q:"Scegli la forma corretta: 'Prima ___ uscire, chiudi la finestra.'",opts:["di","a","da","per"],ans:0,exp:"'Prima di' + infinito: Prima di uscire, prima di mangiare, prima di dormire."},
+  {level:"B1",cat:"Connettivi",q:"Qual connettivo indica una concessione?",opts:["Nonostante","Perché","Quindi","Inoltre"],ans:0,exp:"I connettivi concessivi (nonostante, benché, sebbene, anche se) introducono un'informazione che contrasta con l'idea principale."},
+  {level:"B1",cat:"Connettivi",q:"Scegli il connettivo corretto: 'Studio molto, ___ non passo mai gli esami.'",opts:["eppure","quindi","perciò","infatti"],ans:0,exp:"'Eppure' (= and yet, nevertheless) indica contrasto tra due informazioni collegate."},
+  {level:"B1",cat:"Lessico",q:"Quale parola significa 'nonostante' in un registro più formale?",opts:["malgrado","sebbene","benché","tuttavia"],ans:0,exp:"'Malgrado', 'nonostante', 'a dispetto di' + sostantivo/pronome. 'Sebbene' e 'benché' + congiuntivo."},
+  {level:"B1",cat:"Discorso indiretto",q:"Trasforma: Ha detto: 'Parto domani.' → Ha detto che...",opts:["partiva il giorno dopo","partirà domani","parte domani","è partito il giorno dopo"],ans:0,exp:"Nel discorso indiretto con verbo al passato: presente→imperfetto, futuro→condizionale, 'domani'→'il giorno dopo'."},
+  {level:"B1",cat:"Discorso indiretto",q:"Trasforma: Mi ha chiesto: 'Hai mangiato?' → Mi ha chiesto se...",opts:["avessi mangiato","ho mangiato","mangiassi","avevo mangiato"],ans:0,exp:"Le domande dirette diventano indirette con 'se' + congiuntivo o indicativo imperfetto/trapassato."},
+  {level:"B1",cat:"Vocabolario avanzato",q:"Quale parola completa correttamente la frase: 'Devi ___ la firma sul documento.'",opts:["apporre","mettere","fare","scrivere"],ans:0,exp:"In linguaggio formale/burocratico: 'apporre la firma' = mettere la firma ufficialmente su un documento."},
+  {level:"B1",cat:"Preposizioni",q:"Scegli la preposizione corretta: 'Ho aspettato ___ due ore.'",opts:["per","da","in","di"],ans:0,exp:"'Per' indica durata di tempo: ho aspettato per due ore, ho studiato per tutta la notte."},
+  {level:"B1",cat:"Preposizioni",q:"Scegli la preposizione corretta: 'Studio italiano ___ tre anni.'",opts:["da","per","in","da quando"],ans:0,exp:"'Da' indica l'inizio di un'azione che continua nel presente: studio da tre anni (= I have been studying for 3 years)."},
+  {level:"B1",cat:"Verbi fraseologici",q:"Cosa significa 'stare per' + infinito?",opts:["essere sul punto di fare qualcosa","stare facendo qualcosa","smettere di fare qualcosa","continuare a fare qualcosa"],ans:0,exp:"'Stare per' + infinito = essere sul punto di: Sto per uscire (I'm about to leave). Stavo per chiamarti!"},
+  {level:"B1",cat:"Modi indefiniti",q:"Scegli la forma corretta del participio passato: 'Arrivata ___ casa, si è subito rilassata.'",opts:["a","alla","da","in"],ans:0,exp:"'Arrivare a casa': il participio assoluto concorda con il soggetto (arrivata) e poi la prep. è 'a' + casa."},
+  {level:"B1",cat:"Lessico",q:"Quale espressione si usa per fare una proposta formale?",opts:["Le proporrei di...","Voglio che tu...","Dovresti...","Fai..."],ans:0,exp:"Il condizionale di cortesia (proporrei, potrebbe, vorrebbe) si usa per fare proposte o richieste in modo formale."},
+  {level:"B1",cat:"Congiuntivo imperfetto",q:"Qual è il congiuntivo imperfetto di 'essere' (loro)?",opts:["fossero","siano","erano","fussero"],ans:0,exp:"Congiuntivo imperfetto di 'essere': fossi, fossi, fosse, fossimo, foste, fossero."},
+  {level:"B1",cat:"Congiuntivo imperfetto",q:"Completa: 'Vorrei che tu ___ più attento.'",opts:["fossi","sei","sia","eri"],ans:0,exp:"Dopo 'vorrei che' (desiderio irreale o difficile) → congiuntivo imperfetto: vorrei che tu fossi..."},
+  {level:"B1",cat:"Superlativo",q:"Forma il superlativo assoluto: 'Questo film è ___ bello.'",opts:["bellissimo","il più bello","molto bellissimo","bello assai"],ans:0,exp:"Il superlativo assoluto si forma con -issimo/-issima o con 'molto/tanto/estremamente' + aggettivo. Non si può dire 'molto bellissimo'."},
+  {level:"B1",cat:"Superlativo",q:"Qual è il superlativo irregolare di 'buono'?",opts:["ottimo","buonissimo","il più buono","benissimo"],ans:0,exp:"Superlativi irregolari: buono→ottimo, cattivo→pessimo, grande→massimo, piccolo→minimo. Esiste anche 'buonissimo' come superlativo regolare."},
+  {level:"B1",cat:"Verbi modali",q:"Scegli la traduzione corretta di 'you must not do it':",opts:["Non devi farlo","Non puoi farlo","Non dovresti farlo","Non vuoi farlo"],ans:0,exp:"'Dovere' + negazione = obbligo di non fare: Non devi farlo (you must not). 'Non puoi' = you can't (impossibilità o divieto)."},
+  {level:"B1",cat:"Lessico formale",q:"Cosa significa l'espressione 'fare riferimento a'?",opts:["riferirsi a / menzionare","fare un favore a","riferire qualcosa a qualcuno","fare un errore a"],ans:0,exp:"'Fare riferimento a' = to refer to, to mention. Espressione comune nello scritto formale e nelle comunicazioni professionali."},
+  {level:"B1",cat:"Pronomi combinati",q:"Combina i pronomi correttamente: 'Lo do a te' → ?",opts:["Te lo do","Ti lo do","Lo ti do","Glielo do"],ans:0,exp:"I pronomi si combinano: mi/ti/ci/vi diventano me/te/ce/ve davanti a lo/la/li/le/ne: me lo, te lo, ce lo, ve lo."},
+  {level:"B1",cat:"Lessico",q:"Quale parola è sinonimo di 'tuttavia'?",opts:["però","quindi","inoltre","siccome"],ans:0,exp:"'Tuttavia', 'però', 'eppure', 'ma', 'ciononostante' indicano contrasto. 'Quindi' e 'perciò' indicano conseguenza."},
+];
+
+let current = 0;
+let answers = new Array(50).fill(null);
+let revealed = new Array(50).fill(false);
+
+function render() {
+  const q = questions[current];
+  const area = document.getElementById('quiz-area');
+  const pct = ((current+1)/50*100).toFixed(0);
+  document.getElementById('pbar').style.width = pct+'%';
+  document.getElementById('pcount').textContent = `Domanda ${current+1} di 50`;
+  const correct = answers.filter((a,i)=>a===questions[i].ans).length;
+  document.getElementById('pscore').textContent = `Risposte corrette: ${correct}`;
+  
+  const answered = answers[current] !== null;
+  const btnNext = document.getElementById('btn-next');
+  const btnPrev = document.getElementById('btn-prev');
+  btnNext.disabled = !answered;
+  btnPrev.disabled = current === 0;
+  btnNext.textContent = current === 49 ? 'Vedi risultati →' : 'Prossima →';
+
+  let badgeClass = q.level === 'A1' ? 'badge-a1' : q.level === 'A2' ? 'badge-a2' : 'badge-b1';
+  
+  let optsHtml = q.opts.map((o,i) => {
+    let cls = 'option-btn';
+    let dis = '';
+    if (answered) {
+      dis = 'disabled';
+      if (i === q.ans) cls += ' correct';
+      else if (i === answers[current]) cls += ' wrong';
+    }
+    return `<button class="${cls}" ${dis} onclick="answer(${i})">${String.fromCharCode(65+i)}. ${o}</button>`;
+  }).join('');
+
+  let expHtml = answered ? `<div class="explanation"><strong>Spiegazione:</strong> ${q.exp}</div>` : '';
+
+  area.innerHTML = `
+    <div class="question-card">
+      <div class="category-tag">${q.cat}</div>
+      <span class="level-badge ${badgeClass}">${q.level}</span>
+      <div class="q-text">${current+1}. ${q.q}</div>
+      <div class="options">${optsHtml}</div>
+      ${expHtml}
+    </div>`;
+}
+
+function answer(i) {
+  if (answers[current] !== null) return;
+  answers[current] = i;
+  render();
+  document.getElementById('btn-next').disabled = false;
+}
+
+function nextQ() {
+  if (current < 49) { current++; render(); }
+  else showResults();
+}
+
+function prevQ() {
+  if (current > 0) { current--; render(); }
+}
+
+function showResults() {
+  const correct = answers.filter((a,i) => a !== null && a === questions[i].ans).length;
+  const total = answers.filter(a => a !== null).length;
+  const pct = Math.round((correct/50)*100);
+  const byLevel = {A1:{c:0,t:0},A2:{c:0,t:0},B1:{c:0,t:0}};
+  questions.forEach((q,i)=>{ byLevel[q.level].t++; if(answers[i]===q.ans) byLevel[q.level].c++; });
+  
+  let grade = pct >= 80 ? '🎉 Ottimo!' : pct >= 60 ? '👍 Buono!' : '📚 Da ripassare';
+  let comment = pct >= 80 ? 'Sei pronto per il PLIDA B1!' : pct >= 60 ? 'Ancora un po\' di ripasso e ce la fai!' : 'Concentrati sui temi del B1.';
+  
+  document.getElementById('quiz-area').innerHTML = `
+    <div class="results-card">
+      <div class="score-big">${correct}/50</div>
+      <div class="score-label">${pct}% — ${grade}</div>
+      <div style="font-size:14px;color:var(--color-text-secondary);margin-bottom:1rem;">${comment}</div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-num green">${byLevel.A1.c}/${byLevel.A1.t}</div><div class="stat-lbl">Livello A1</div></div>
+        <div class="stat-card"><div class="stat-num blue">${byLevel.A2.c}/${byLevel.A2.t}</div><div class="stat-lbl">Livello A2</div></div>
+        <div class="stat-card"><div class="stat-num" style="color:#534AB7">${byLevel.B1.c}/${byLevel.B1.t}</div><div class="stat-lbl">Livello B1</div></div>
+      </div>
+      <button class="btn btn-primary" onclick="restart()" style="margin-top:1rem">Ricomincia il quiz</button>
+    </div>`;
+  document.getElementById('nav-row').style.display = 'none';
+}
+
+function restart() {
+  current = 0;
+  answers = new Array(50).fill(null);
+  document.getElementById('nav-row').style.display = 'flex';
+  render();
+}
+
+render();
+</script>
